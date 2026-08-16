@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spatial EYE - Web Accessibility Simulator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            padding: 15px 0;
+            border-bottom: 2px solid #333;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 28px;
+            color: #FFFFFF;
+        }
+        .status-card {
+            background-color: #1F1F1F;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #333;
+        }
+        .status-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00E676;
+            margin-bottom: 8px;
+        }
+        .status-desc {
+            font-size: 18px;
+            color: #E0E0E0;
+            line-height: 1.4;
+        }
+        .camera-box {
+            width: 100%;
+            height: 250px;
+            background-color: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #444;
+        }
+        video, img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .file-input {
+            display: none;
+        }
+        .btn {
+            width: 100%;
+            min-height: 64px;
+            border: none;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-green { background-color: #2E7D32; }
+        .btn-orange { background-color: #F57C00; }
+        .btn-cyan { background-color: #00838F; }
+        .btn-blue { background-color: #1565C0; }
+        .btn-purple { background-color: #6A1B9A; }
+        .btn-red { background-color: #D50000; font-size: 22px; min-height: 72px; margin-top: 10px; }
+
+        .places-list {
+            background: #1F1F1F;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        .place-item {
+            background: #2A2A2A;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>👁️ Spatial EYE Simulator</h1>
+    </header>
+
+    <div class="status-card">
+        <div class="status-title" id="statusTitle">Status: Active (Backend Connected)</div>
+        <div class="status-desc" id="statusDesc">Ready. Tap a button below or select an image to test.</div>
+    </div>
+
+    <div class="camera-box">
+        <video id="webcam" autoplay playsinline style="display:none;"></video>
+        <img id="previewImg" src="" alt="Capture preview" style="display:none;">
+        <div id="camPlaceholder" style="color:#aaa; text-align:center; padding:10px;">
+            Camera Preview Area<br>(Click "Save Place" or "Check Changes")
+        </div>
+    </div>
+
+    <input type="file" id="filePicker" class="file-input" accept="image/*">
+
+    <button class="btn btn-green" onclick="triggerAction('save')">📸 SAVE NEW PLACE</button>
+    <button class="btn btn-orange" onclick="triggerAction('check')">🔍 CHECK ENVIRONMENT CHANGES</button>
+    <button class="btn btn-cyan" onclick="fetchMyPlaces()">📚 MY SAVED PLACES</button>
+    <button class="btn btn-blue" onclick="startVoiceRecognition()">🎙️ VOICE COMMANDS</button>
+    <button class="btn btn-purple" onclick="toggleVibration()">📳 TOGGLE VIBRATION</button>
+    <button class="btn btn-red" onclick="triggerEmergency()">🚨 EMERGENCY ALERT</button>
+
+    <div class="places-list" id="placesContainer">
+        <h3 style="margin-bottom:10px;">Saved Places (MongoDB)</h3>
+        <div id="placesContent">Loading...</div>
+    </div>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+        let currentMode = "";
+        let vibrationEnabled = true;
+
+        // Text-to-Speech Engine
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+            document.getElementById('statusDesc').innerText = text;
+        }
+
+        // Haptic Vibration Engine
+        function vibrate(pattern) {
+            if (vibrationEnabled && 'vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        }
+
+        // Health Check on Load
+        async function checkHealth() {
+            try {
+                const res = await fetch(`${API_BASE}/api/health`);
+                const data = await res.json();
+                if (data.status === 'healthy') {
+                    document.getElementById('statusTitle').innerText = "Status: Connected to MongoDB";
+                    speak("Spatial EYE Simulator Connected. Backend is ready.");
+                }
+            } catch (e) {
+                document.getElementById('statusTitle').innerText = "Status: Backend Disconnected";
+                document.getElementById('statusTitle').style.color = "#FF5252";
+                speak("Backend disconnected. Please run python backend/main.py");
+            }
+        }
+        checkHealth();
+
+        function triggerAction(mode) {
+            currentMode = mode;
+            document.getElementById('filePicker').click();
+        }
+
+        document.getElementById('filePicker').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Show Preview
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = document.getElementById('previewImg');
+                img.src = evt.target.result;
+                img.style.display = 'block';
+                document.getElementById('camPlaceholder').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            if (currentMode === 'save') {
+                const name = prompt("Enter Place Name:", "Living Room") || "Saved Memory";
+                formData.append('name', name);
+                formData.append('user_id', 'default');
+                speak("Saving spatial memory, please wait.");
+                
+                try {
+                    const res = await fetch(`${API_BASE}/api/save-place`, { method: 'POST', body: formData });
+                    const data = await res.json();
+                    vibrate([100]);
+                    speak(`Place saved successfully: ${name}`);
+                } catch (err) {
+                    speak("Error saving place to backend.");
+                }
+            } else if (currentMode === 'check') {
+                speak("Checking environment for changes.");
+                try {
+                    const placesRes = await fetch(`${API_BASE}/api/places`);
+                    const places = await placesRes.json();
+                    if (!places || places.length === 0) {
+                        speak("No saved places found in database. Save a place first.");
+                        return;
+                    }
+                    const placeId = places[0]._id;
+                    formData.append('place_id', placeId);
+
+                    const res = await fetch(`${API_BASE}/api/check-changes`, { method: 'POST', body: formData });
+                    const data = await res.json();
+                    const result = data.change_result;
+                    
+                    if (result.has_important_changes) {
+                        vibrate([800]);
+                        speak(result.tts_message || "Warning: Obstacle changes detected!");
+                    } else {
+                        vibrate([100, 100, 100]);
+                        speak(result.tts_message || "No significant changes detected.");
+                    }
+                } catch (err) {
+                    speak("Error checking changes.");
+                }
+            }
+        });
+
+        async function fetchMyPlaces() {
+            try {
+                const res = await fetch(`${API_BASE}/api/places`);
+                const places = await res.json();
+                const container = document.getElementById('placesContainer');
+                const content = document.getElementById('placesContent');
+                container.style.display = 'block';
+
+                if (places.length === 0) {
+                    content.innerHTML = "<p>No places saved in MongoDB yet.</p>";
+                    speak("You have no saved places.");
+                } else {
+                    let html = "";
+                    places.forEach(p => {
+                        html += `<div class="place-item">
+                            <div><strong>${p.name}</strong><br><small>Objects: ${p.objects ? p.objects.length : 0}</small></div>
+                            <button onclick="deletePlace('${p._id}')" style="background:#D50000; color:#fff; border:none; padding:6px 12px; border-radius:6px;">Delete</button>
+                        </div>`;
+                    });
+                    content.innerHTML = html;
+                    speak(`Loaded ${places.length} saved places.`);
+                }
+            } catch (err) {
+                speak("Error fetching places library.");
+            }
+        }
+
+        async function deletePlace(id) {
+            try {
+                await fetch(`${API_BASE}/api/place/${id}`, { method: 'DELETE' });
+                speak("Place deleted.");
+                fetchMyPlaces();
+            } catch (err) {
+                speak("Failed to delete place.");
+            }
+        }
+
+        function toggleVibration() {
+            vibrationEnabled = !vibrationEnabled;
+            speak(vibrationEnabled ? "Vibration enabled." : "Vibration disabled.");
+        }
+
+        function triggerEmergency() {
+            vibrate([400, 100, 400, 100, 400]);
+            speak("Emergency mode activated! High risk danger nearby. Stop moving immediately.");
+        }
+
+        function startVoiceRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                speak("Voice recognition not supported in this browser.");
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            speak("Listening for voice command.");
+            
+            recognition.onresult = function(event) {
+                const command = event.results[0][0].transcript.toLowerCase();
+                speak(`Command received: ${command}`);
+                if (command.includes('save')) triggerAction('save');
+                else if (command.includes('check')) triggerAction('check');
+                else if (command.includes('emergency')) triggerEmergency();
+                else if (command.includes('places')) fetchMyPlaces();
+            };
+            recognition.start();
+        }
+    </script>
+</body>
+</html>
