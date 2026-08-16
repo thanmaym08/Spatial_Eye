@@ -7,8 +7,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    // 10.117.36.31 is the computer's Wi-Fi IP for physical mobile testing
-    private const val BASE_URL = "http://10.117.36.31:8000"
+    // Default for Android Studio Emulator (10.0.2.2 points to host localhost)
+    // For physical mobile device, replace 10.0.2.2 with your computer's local Wi-Fi IP (e.g. http://192.168.1.5:8000/)
+    private const val BASE_URL = "http://10.0.2.2:8000/"
+
 
     private val okHttpClient by lazy {
         val logging = HttpLoggingInterceptor().apply {

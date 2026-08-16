@@ -1,65 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_dark"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp">
+    android:background="#121212"
+    android:fillViewport="true"
+    android:padding="16dp"
+    tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Facial AI"
-        android:textSize="48sp"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:contentDescription="Facial AI App Title" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Spatial Memory Assistant"
-        android:textSize="18sp"
-        android:textColor="@color/primary_blue"
-        android:layout_marginBottom="64dp"
-        android:contentDescription="App Subtitle Spatial Memory Assistant" />
+        <!-- Application Header -->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Spatial EYE Assistance"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:paddingVertical="12dp"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Spatial EYE Accessibility Dashboard" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSavePlace"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:text="SAVE THIS PLACE"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"
-        android:contentDescription="Button to save current place"
-        app:cornerRadius="12dp"
-        xmlns:app="http://schemas.android.com/apk/res-auto" />
+        <!-- Status & Live Guidance Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#1F1F1F"
+            android:padding="20dp"
+            android:layout_marginVertical="12dp">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCheckChanges"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:text="CHECK FOR CHANGES"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"
-        android:contentDescription="Button to check for changes in a saved place"
-        app:cornerRadius="12dp"
-        xmlns:app="http://schemas.android.com/apk/res-auto" />
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Status: Active"
+                android:textColor="#00E676"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:importantForAccessibility="yes"
+                android:contentDescription="System Status: Active" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnMyPlaces"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:text="MY PLACES"
-        android:textSize="18sp"
-        android:textColor="@color/white"
-        app:strokeColor="@color/primary_blue"
-        app:strokeWidth="2dp"
-        android:contentDescription="Button to view saved places"
-        app:cornerRadius="12dp"
-        xmlns:app="http://schemas.android.com/apk/res-auto" />
-</LinearLayout>
+            <TextView
+                android:id="@+id/tv_detection_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Welcome to Spatial EYE. Choose an option below or use voice commands."
+                android:textColor="#E0E0E0"
+                android:textSize="20sp"
+                android:importantForAccessibility="yes"
+                android:contentDescription="Live guidance status" />
+        </LinearLayout>
+
+        <!-- Save New Place (Camera AI) -->
+        <Button
+            android:id="@+id/btn_save_place"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginVertical="6dp"
+            android:backgroundTint="#2E7D32"
+            android:text="SAVE NEW PLACE (CAMERA)"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Save new place using camera AI memory" />
+
+        <!-- Check Environment Changes -->
+        <Button
+            android:id="@+id/btn_check_changes"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginVertical="6dp"
+            android:backgroundTint="#F57C00"
+            android:text="CHECK ENVIRONMENT CHANGES"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Check current room for changes or obstacles" />
+
+        <!-- My Saved Places -->
+        <Button
+            android:id="@+id/btn_my_places"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginVertical="6dp"
+            android:backgroundTint="#00838F"
+            android:text="MY SAVED PLACES"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:importantForAccessibility="yes"
+            android:contentDescription="View saved spatial memory places" />
+
+        <!-- Voice Commands -->
+        <Button
+            android:id="@+id/btn_voice"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginVertical="6dp"
+            android:backgroundTint="#1565C0"
+            android:text="VOICE COMMANDS"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Activate Voice Command Input" />
+
+        <!-- Vibration Toggle -->
+        <Button
+            android:id="@+id/btn_vibration_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginVertical="6dp"
+            android:backgroundTint="#6A1B9A"
+            android:text="VIBRATION: ON"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Toggle Vibration Haptic Feedback" />
+
+        <!-- Emergency Alert -->
+        <Button
+            android:id="@+id/btn_emergency"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#D50000"
+            android:text="EMERGENCY ALERT"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Emergency Alert button. Immediate voice warning and continuous vibration." />
+
+    </LinearLayout>
+</ScrollView>

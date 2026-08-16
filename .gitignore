@@ -18,7 +18,10 @@ venv/
 env/
 .env
 backend/*.pt
+*.pt
+images/
 backend/images/
+
 
 # IDE and System
 .idea/

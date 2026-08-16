@@ -10,16 +10,31 @@ from config import config
 from models.schemas import SavePlaceResponse, CheckChangesResponse, ChangeResult, DetectedObject
 from detection.yolo_detector import detect_objects
 from detection.gemini_analyzer import analyze_scene, describe_changes
-from memory.spatial_memory import save_place, get_place, get_all_places, delete_place, log_change
+from memory.spatial_memory import save_place, get_place, get_all_places, delete_place, log_change, check_db_connection
 from comparison.change_detector import compare_environments
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Warm up YOLO model
     print(f"Loading YOLO model {config.YOLO_MODEL_NAME}...")
+    db_status = "connected" if check_db_connection() else "disconnected/unreachable"
+    print(f"MongoDB status at {config.MONGODB_URI}: {db_status}")
     yield
 
 app = FastAPI(title="Facial AI Backend", lifespan=lifespan)
+
+@app.get("/api/health")
+async def api_health():
+    db_connected = check_db_connection()
+    return {
+        "status": "healthy",
+        "mongodb": {
+            "uri": config.MONGODB_URI,
+            "database": config.DATABASE_NAME,
+            "connected": db_connected
+        }
+    }
+
 
 # CORS middleware
 app.add_middleware(

@@ -1,11 +1,15 @@
 package com.facialai
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.facialai.api.RetrofitClient
 import com.facialai.databinding.ActivityCheckChangesBinding
@@ -26,6 +30,19 @@ class CheckChangesActivity : AppCompatActivity() {
     private lateinit var speechHelper: SpeechHelper
     private var placesList: List<Place> = emptyList()
 
+    private val cameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            cameraHelper.startCamera(binding.viewFinder)
+        } else {
+            val msg = "Camera permission is required to check changes"
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+            speechHelper.speak(msg)
+            finish()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCheckChangesBinding.inflate(layoutInflater)
@@ -33,7 +50,8 @@ class CheckChangesActivity : AppCompatActivity() {
 
         speechHelper = SpeechHelper(this)
         cameraHelper = CameraHelper(this, this)
-        cameraHelper.startCamera(binding.viewFinder)
+        checkAndStartCamera()
+
 
         loadPlaces()
 
@@ -126,8 +144,17 @@ class CheckChangesActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
+    private fun checkAndStartCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            cameraHelper.startCamera(binding.viewFinder)
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         speechHelper.shutdown()
     }
 }
+

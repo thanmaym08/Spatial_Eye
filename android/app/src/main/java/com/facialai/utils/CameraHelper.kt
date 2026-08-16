@@ -55,17 +55,32 @@ class CameraHelper(private val context: Context, private val lifecycleOwner: Lif
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageCapturedCallback() {
                 override fun onCaptureSuccess(image: ImageProxy) {
-                    val buffer = image.planes[0].buffer
-                    val bytes = ByteArray(buffer.remaining())
-                    buffer.get(bytes)
-                    
-                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    val rotatedBitmap = rotateBitmap(bitmap, image.imageInfo.rotationDegrees)
-                    
-                    val stream = ByteArrayOutputStream()
-                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, stream)
-                    image.close()
-                    callback(stream.toByteArray())
+                    try {
+                        val buffer = image.planes[0].buffer
+                        val bytes = ByteArray(buffer.remaining())
+                        buffer.get(bytes)
+                        
+                        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        if (bitmap == null) {
+                            image.close()
+                            return callback(null)
+                        }
+                        val rotatedBitmap = rotateBitmap(bitmap, image.imageInfo.rotationDegrees)
+                        
+                        val stream = ByteArrayOutputStream()
+                        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream)
+                        
+                        if (rotatedBitmap != bitmap) {
+                            rotatedBitmap.recycle()
+                        }
+                        bitmap.recycle()
+                        image.close()
+                        callback(stream.toByteArray())
+                    } catch (e: Exception) {
+                        Log.e("CameraHelper", "Error processing captured image", e)
+                        image.close()
+                        callback(null)
+                    }
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -82,3 +97,4 @@ class CameraHelper(private val context: Context, private val lifecycleOwner: Lif
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 }
+

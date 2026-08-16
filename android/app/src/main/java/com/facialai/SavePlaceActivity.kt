@@ -1,9 +1,13 @@
 package com.facialai
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.facialai.api.RetrofitClient
 import com.facialai.databinding.ActivitySavePlaceBinding
@@ -23,6 +27,19 @@ class SavePlaceActivity : AppCompatActivity() {
     private lateinit var speechHelper: SpeechHelper
     private lateinit var vibrationHelper: VibrationHelper
 
+    private val cameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            cameraHelper.startCamera(binding.viewFinder)
+        } else {
+            val msg = "Camera permission is required to save place"
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+            speechHelper.speak(msg)
+            finish()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySavePlaceBinding.inflate(layoutInflater)
@@ -31,7 +48,9 @@ class SavePlaceActivity : AppCompatActivity() {
         speechHelper = SpeechHelper(this)
         vibrationHelper = VibrationHelper(this)
         cameraHelper = CameraHelper(this, this)
-        cameraHelper.startCamera(binding.viewFinder)
+        
+        checkAndStartCamera()
+
 
         binding.btnSave.setOnClickListener {
             val placeName = binding.etPlaceName.text.toString()
@@ -94,8 +113,17 @@ class SavePlaceActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
+    private fun checkAndStartCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            cameraHelper.startCamera(binding.viewFinder)
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         speechHelper.shutdown()
     }
 }
+
