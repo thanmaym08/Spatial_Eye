@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Facial AI</string>
+    <string name="camera_permission_required">Camera permission is required.</string>
+    <string name="speak_save_place">Save this place</string>
+    <string name="speak_check_changes">Check for changes</string>
+    <string name="speak_my_places">My places</string>
+    <string name="place_details_format">Saved on: %1$s | Objects: %2$d</string>
+</resources>

@@ -1,0 +1,1 @@
+# Init detection module

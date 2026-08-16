@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Facial AI"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:contentDescription="Facial AI App Title" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Spatial Memory Assistant"
+        android:textSize="18sp"
+        android:textColor="@color/primary_blue"
+        android:layout_marginBottom="64dp"
+        android:contentDescription="App Subtitle Spatial Memory Assistant" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSavePlace"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="SAVE THIS PLACE"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="Button to save current place"
+        app:cornerRadius="12dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCheckChanges"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="CHECK FOR CHANGES"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="Button to check for changes in a saved place"
+        app:cornerRadius="12dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnMyPlaces"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:text="MY PLACES"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        app:strokeColor="@color/primary_blue"
+        app:strokeWidth="2dp"
+        android:contentDescription="Button to view saved places"
+        app:cornerRadius="12dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
+</LinearLayout>

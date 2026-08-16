@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Check For Changes"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="Check for changes header" />
+
+    <Spinner
+        android:id="@+id/spinnerPlaces"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="#222222"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="Dropdown to select saved place" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp">
+        <androidx.camera.view.PreviewView
+            android:id="@+id/viewFinder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="Camera preview for checking changes" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCheck"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="CHECK NOW"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:contentDescription="Button to capture image and check for changes"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:cornerRadius="12dp" />
+</LinearLayout>

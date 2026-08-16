@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/alertContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CHANGE DETECTED"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/color_high_risk"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tvRiskLevel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="RISK LEVEL: HIGH"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/color_high_risk"
+        android:layout_marginBottom="24dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="24dp">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Details of changes will appear here."
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:layout_marginBottom="16dp" />
+                
+            <TextView
+                android:id="@+id/tvChangesList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="- Change 1\n- Change 2"
+                android:textSize="18sp"
+                android:textColor="#CCCCCC" />
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSpeakAgain"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="SPEAK AGAIN"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:cornerRadius="12dp" />
+</LinearLayout>
